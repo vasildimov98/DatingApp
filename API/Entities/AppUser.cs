@@ -8,6 +8,8 @@ public class AppUser
     
     public required string UserName { get; set; }
 
+    public required string Gender { get; set; }
+
     public byte[] PasswordHash { get; set; } = [];
 
     public byte[] PasswordSalt { get; set; } = [];
@@ -21,7 +23,9 @@ public class AppUser
     public DateTime LastActive { get; set; } = DateTime.UtcNow;
 
     public string? Introduction { get; set; }
-    public string? Interest { get; set; }
+
+    public string? Interests { get; set; }
+
     public string? LookingFor { get; set; }
 
     public required string City { get; set; }

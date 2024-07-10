@@ -2,7 +2,6 @@
 using System.Text;
 using API.Data;
 using API.DTOs;
-using API.DTOs.Extensions;
 using API.Entities;
 using API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -58,7 +57,11 @@ public class AccountController(DataContext context, ITokenService tokenService) 
             return this.Unauthorized("Invalid Password");
         }
 
-        return user.MapUserDto(tokenService.CreateToken(user));
+        return new UserDto 
+        {
+            Username = user.UserName,
+            Token = tokenService.CreateToken(user),
+        };
     }
 
     private async Task<bool> DoesUserExistsAsync(string username)
