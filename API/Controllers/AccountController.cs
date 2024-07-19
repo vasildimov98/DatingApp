@@ -4,12 +4,13 @@ using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Services;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
-public class AccountController(DataContext context, ITokenService tokenService) : BaseApiController
+public class AccountController(DataContext context, ITokenService tokenService, IMapper mapper) : BaseApiController
 {
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> Register(RegisterDto registerDTO)
@@ -17,23 +18,24 @@ public class AccountController(DataContext context, ITokenService tokenService) 
         if (await DoesUserExistsAsync(registerDTO.UserName))
             return this.BadRequest("Username is taken!");
 
-        return Ok();
 
-        // using var hmac = new HMACSHA512();
+        using var hmac = new HMACSHA512();
 
-        // var user = new AppUser
-        // {
-        //     UserName = registerDTO.UserName,
-        //     PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Password)),
-        //     PasswordSalt = hmac.Key,
-        // };
+        var user = mapper.Map<AppUser>(registerDTO);
 
-        // var userDto =  user.MapUserDto(tokenService.CreateToken(user));
+        user.UserName = user.UserName.ToLower();
+        user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Password));
+        user.PasswordSalt = hmac.Key;
 
-        // context.Users.Add(user);
-        // await context.SaveChangesAsync();
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
 
-        // return userDto;
+        return new UserDto
+        {
+            Username = user.UserName,
+            KnownAs = user.KnownAs,
+            Token = tokenService.CreateToken(user),
+        };
     }
 
     [HttpPost("login")]
@@ -58,9 +60,10 @@ public class AccountController(DataContext context, ITokenService tokenService) 
             return this.Unauthorized("Invalid Password");
         }
 
-        return new UserDto 
+        return new UserDto
         {
             Username = user.UserName,
+            KnownAs = user.KnownAs,
             Token = tokenService.CreateToken(user),
             PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
         };
@@ -88,7 +91,7 @@ public class AccountController(DataContext context, ITokenService tokenService) 
                 return false;
             }
         }
-        
+
         return true;
     }
 }
