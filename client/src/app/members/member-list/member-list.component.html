@@ -60,7 +60,9 @@
             (click)="loadMembers()"
             btnRadio="lastActive"
             [(ngModel)]="memberService.userParams().orderBy"
-          >Last Active</button>
+          >
+            Last Active
+          </button>
           <button
             type="button"
             class="btn btn-primary"
@@ -68,7 +70,9 @@
             (click)="loadMembers()"
             btnRadio="created"
             [(ngModel)]="memberService.userParams().orderBy"
-          >Newest Member</button>
+          >
+            Newest Member
+          </button>
         </div>
       </div>
     </form>
@@ -81,20 +85,20 @@
   }
 </div>
 
-<div class="d-flex justify-content-center">
-  @if (memberService.paginatedResult()?.pagination) {
-  <pagination
-    [boundaryLinks]="true"
-    [totalItems]="(memberService.paginatedResult()?.pagination)!.totalItems"
-    [itemsPerPage]="(memberService.paginatedResult()?.pagination)!.itemsPerPage"
-    [(ngModel)]="memberService.paginatedResult()?.pagination!.currentPage"
-    (pageChanged)="pageChanged($event)"
-    [maxSize]="10"
-    previousText="&lsaquo;"
-    nextText="&rsaquo;"
-    firstText="&laquo;"
-    lastText="&raquo;"
-  >
-  </pagination>
-  }
-</div>
+@if (memberService.paginatedResult()?.pagination) {
+    <div class="d-flex justify-content-center">
+      <pagination
+        [boundaryLinks]="true"
+        [totalItems]="(memberService.paginatedResult()?.pagination)!.totalItems"
+        [itemsPerPage]="(memberService.paginatedResult()?.pagination)!.itemsPerPage"
+        [(ngModel)]="(memberService.paginatedResult()?.pagination)!.currentPage"
+        (pageChanged)="pageChanged($event)"
+        [maxSize]="10"
+        previousText="&lsaquo;"
+        nextText="&rsaquo;"
+        firstText="&laquo;"
+        lastText="&raquo;"
+      >
+      </pagination>
+    </div>
+}

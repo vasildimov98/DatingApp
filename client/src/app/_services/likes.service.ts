@@ -5,7 +5,7 @@ import { Member } from '../_models/member';
 import { PaginatedResult } from '../_models/pagination';
 import {
   setPaginationHeaders,
-  setResponseToPaginatedResult,
+  setPaginatedResponse,
 } from './paginationHelper';
 
 @Injectable({
@@ -34,7 +34,7 @@ export class LikesService {
       })
       .subscribe({
         next: (response) =>
-          setResponseToPaginatedResult(response, this.paginatedResult),
+          setPaginatedResponse(response, this.paginatedResult),
       });
   }
 

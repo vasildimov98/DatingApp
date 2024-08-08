@@ -5,6 +5,7 @@
         "datepicker",
         "hmac",
         "HMACSHA",
+        "timeago",
         "toastr"
     ]
 }
