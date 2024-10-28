@@ -8,6 +8,16 @@ public interface IMessageRepository
 {
     void AddMessage(Message message);
 
+    void AddGroup(Group group);
+
+    void RemoveConnection(Connection connection);
+
+    Task<Connection?> GetConnection(string connectionId);
+
+    Task<Group?> GetMessageGroup(string groupName); 
+
+    Task<Group?> GetGroupForConnection(string connectionId);
+
     void DeleteMessage(Message message);
 
     Task<Message?> GetMessage(int id);
