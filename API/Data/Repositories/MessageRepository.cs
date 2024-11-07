@@ -64,7 +64,19 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
                  && !x.HasRecipientDeleted),
         };
 
-        var messageQuery = query.ProjectTo<MessageDto>(mapper.ConfigurationProvider);
+        var messageQuery = query.Select(x => new MessageDto
+        {
+            Id = x.Id,
+            SenderId = x.SenderId,
+            SenderUsername = x.Sender.UserName!,
+            SenderPhotoUrl = x.Sender.Photos.FirstOrDefault(x => x.IsMain)!.Url,
+            RecipientId = x.RecipientId,
+            RecipientUsername = x.Recipient.UserName!,
+            RecipientPhotoUrl = x.Recipient.Photos.FirstOrDefault(x => x.IsMain)!.Url,
+            Content = x.Content,
+            MessageSent = x.MessageSent,
+            MessageRead = x.MessageRead,
+        });
 
         return await PagedList<MessageDto>
             .CreateAsync(messageQuery, messageParams.PageNumber, messageParams.PageSize);
@@ -72,7 +84,7 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
 
     public async Task<IEnumerable<MessageDto>> GetMessageThread(string currentUsername, string recipientUsername)
     {
-        var messages = context.Messages
+        var query = context.Messages
             .Where(x =>
                 x.RecipientUsername == currentUsername
                     && !x.HasRecipientDeleted
@@ -82,39 +94,34 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
                     && x.RecipientUsername == recipientUsername
             )
             .OrderBy(x => x.MessageSent)
-            .Select(x => new MessageDto
-            {
-                Id = x.Id,
-                SenderId = x.SenderId,
-                SenderUsername = x.Sender.UserName!,
-                SenderPhotoUrl = x.Sender.Photos.FirstOrDefault(x => x.IsMain)!.Url,
-                RecipientId = x.RecipientId,
-                RecipientUsername = x.Recipient.UserName!,
-                RecipientPhotoUrl = x.Recipient.Photos.FirstOrDefault(x => x.IsMain)!.Url,
-                Content = x.Content,
-                MessageSent = x.MessageSent,
-                MessageRead = x.MessageRead,
-            })
-            .ToList();
+            .AsQueryable();
 
-        var unreadMessages = messages.Where(x => x.MessageRead == null && x.RecipientUsername == currentUsername).ToList();
+
+        var unreadMessages = query.Where(x => x.MessageRead == null && x.RecipientUsername == currentUsername).ToList();
 
         if (unreadMessages.Count != 0)
         {
             unreadMessages.ForEach(x => x.MessageRead = DateTime.UtcNow);
-            await context.SaveChangesAsync();
         }
 
-        return messages;
+        return await query.Select(x => new MessageDto
+        {
+            Id = x.Id,
+            SenderId = x.SenderId,
+            SenderUsername = x.Sender.UserName!,
+            SenderPhotoUrl = x.Sender.Photos.FirstOrDefault(x => x.IsMain)!.Url,
+            RecipientId = x.RecipientId,
+            RecipientUsername = x.Recipient.UserName!,
+            RecipientPhotoUrl = x.Recipient.Photos.FirstOrDefault(x => x.IsMain)!.Url,
+            Content = x.Content,
+            MessageSent = x.MessageSent,
+            MessageRead = x.MessageRead,
+        })
+        .ToListAsync();
     }
 
     public void RemoveConnection(Connection connection)
     {
         context.Connections.Remove(connection);
-    }
-
-    public async Task<bool> SaveAllAsync()
-    {
-        return await context.SaveChangesAsync() > 0;
     }
 }

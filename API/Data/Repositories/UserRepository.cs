@@ -22,19 +22,20 @@ public class UserRepository(DataContext context, IMapper mapper) : IUserReposito
         var query = context.Users
             .Where(x => x.UserName != userParams.CurrentUsername);
 
-        if (userParams.Gender != null) 
+        if (userParams.Gender != null)
         {
             query = query
                 .Where(x => x.Gender == userParams.Gender);
         }
 
-        var minDateOfBirth = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MaxAge-1));
-        var maxDateOfBirth = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MinAge+1));
+        var minDateOfBirth = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MaxAge - 1));
+        var maxDateOfBirth = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MinAge + 1));
 
         query = query
             .Where(x => x.DateOfBirth >= minDateOfBirth && x.DateOfBirth <= maxDateOfBirth);
 
-        query = userParams.OrderBy switch {
+        query = userParams.OrderBy switch
+        {
             "created" => query.OrderByDescending(x => x.Created),
             _ => query.OrderByDescending(x => x.LastActive)
         };
@@ -64,11 +65,6 @@ public class UserRepository(DataContext context, IMapper mapper) : IUserReposito
         return await context.Users
             .Include(x => x.Photos)
             .ToListAsync();
-    }
-
-    public async Task<bool> SaveAllAsync()
-    {
-        return await context.SaveChangesAsync() > 0;
     }
 
     public void Update(AppUser user)

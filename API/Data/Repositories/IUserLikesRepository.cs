@@ -15,6 +15,4 @@ public interface IUserLikesRepository
     void DeleteLike(UserLike like);
 
     void AddLike(UserLike like);
-
-    Task<bool> SaveChanges();
 }
