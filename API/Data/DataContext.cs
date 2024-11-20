@@ -11,6 +11,7 @@ public class DataContext(DbContextOptions options) : IdentityDbContext<
     IdentityUserLogin<int>, IdentityRoleClaim<int>,
     IdentityUserToken<int>>(options)
 {
+    public DbSet<Photo> Photos { get; set; }
 
     public DbSet<UserLike> UserLikes { get; set; }
 
