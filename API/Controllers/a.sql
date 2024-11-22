@@ -1,0 +1,2 @@
+DELETE FROM AspNetUsers
+WHERE Id = 12;

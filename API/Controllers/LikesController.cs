@@ -49,7 +49,7 @@ public class LikesController(IUnitOfWork unitOfWork) : BaseApiController
     public async Task<ActionResult<IEnumerable<MemberDto>>> GetUserLikes([FromQuery] LikesParams likesParams)
     {
         likesParams.UserId = User.GetUserId();
-        var users  = await unitOfWork.LikesRepository.GetUserLikes(likesParams);
+        var users = await unitOfWork.LikesRepository.GetUserLikes(likesParams);
 
 
         Response.AddPaginationHeader(users);

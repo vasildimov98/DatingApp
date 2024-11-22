@@ -1,5 +1,3 @@
-using System;
-
 namespace API.Data.Repositories;
 
 public interface IUnitOfWork
@@ -9,6 +7,8 @@ public interface IUnitOfWork
     IUserLikesRepository LikesRepository { get; }
 
     IMessageRepository MessageRepository { get; }
+
+    IPhotoRepository PhotoRepository { get; }
 
     Task<bool> Complete();
 

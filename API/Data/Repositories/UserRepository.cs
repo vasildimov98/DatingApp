@@ -9,11 +9,20 @@ namespace API.Data.Repositories;
 
 public class UserRepository(DataContext context, IMapper mapper) : IUserRepository
 {
-    public async Task<MemberDto?> GetMemberAsync(string username)
+    public async Task<MemberDto?> GetMemberAsync(string username, bool ignoreQueryFilters)
     {
-        return await context.Users
+        var query = context.Users
                 .Where(x => x.UserName == username)
-                .ProjectTo<MemberDto>(mapper.ConfigurationProvider)
+                .ProjectTo<MemberDto>(mapper.ConfigurationProvider);
+
+        if (ignoreQueryFilters)
+        {
+            return await query
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync();
+        }
+
+        return await query
                 .FirstOrDefaultAsync();
     }
 
@@ -51,6 +60,14 @@ public class UserRepository(DataContext context, IMapper mapper) : IUserReposito
     {
         return await context.Users
             .FindAsync(id);
+    }
+
+    public async Task<AppUser?> GetUserByPhotoIdAsync(int photoId)
+    {
+        return await context.Users
+            .Include(x => x.Photos)
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(x => x.Photos.Any(x => x.Id == photoId));
     }
 
     public async Task<AppUser?> GetUserByUsernameAsync(string username)

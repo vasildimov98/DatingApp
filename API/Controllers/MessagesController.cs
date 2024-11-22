@@ -81,12 +81,12 @@ public class MessagesController(IUnitOfWork unitOfWork, IMapper mapper) : BaseAp
         if (message.RecipientUsername == username)
             message.HasRecipientDeleted = true;
 
-        if (message is {HasSenderDeleted: true, HasRecipientDeleted: true})
+        if (message is { HasSenderDeleted: true, HasRecipientDeleted: true })
             unitOfWork.MessageRepository.DeleteMessage(message);
 
         if (!await unitOfWork.Complete())
             return BadRequest("Problem deleting the message");
-        
+
         return Ok();
     }
 }

@@ -1,1 +1,26 @@
-<p>photo-management works!</p>
+<div class="container d-flex gap-3">
+  @for (photo of unapprovedPhotos(); track photo.id) {
+
+  <div class="card" style="width: 192px">
+    <div class="card-body">
+      <h5 class="card-title strong">{{ photo.username }}</h5>
+      <img
+        src="{{ photo.url }}"
+        class="card-img-top"
+        alt="unapproved photo here"
+        style="width: 150px; height: 150px"
+      />
+    </div>
+    <div class="card-footer">
+      <div class="btn-group d-flex">
+        <button (click)="approvePhoto(photo.id)" class="btn btn-success me-2">
+          Approve
+        </button>
+        <button (click)="rejectPhoto(photo.id)" class="btn btn-danger">
+          Reject
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+</div>

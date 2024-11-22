@@ -14,7 +14,7 @@ namespace API.Controllers;
 public class UsersController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoService photoService) : BaseApiController
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery]UserParams userParams)
+    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
     {
         userParams.CurrentUsername = User.GetUsername();
         var users = await unitOfWork.UserRepository.GetMembersAsync(userParams);
@@ -27,7 +27,7 @@ public class UsersController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoServi
     [HttpGet("{username}")]
     public async Task<ActionResult<MemberDto>> GetUser(string username)
     {
-        var user = await unitOfWork.UserRepository.GetMemberAsync(username);
+        var user = await unitOfWork.UserRepository.GetMemberAsync(username, User.GetUsername() == username);
 
         if (user == null) return this.NotFound();
 
@@ -76,8 +76,6 @@ public class UsersController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoServi
             PublicId = result.PublicId,
         };
 
-        if (user.Photos.Count == 0) photo.IsMain = true;
-
         user.Photos.Add(photo);
 
         if (!await unitOfWork.Complete()) return this.BadRequest("Problem adding photo!");
@@ -122,7 +120,7 @@ public class UsersController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoServi
 
         if (user == null) return BadRequest("User cannot be null");
 
-        var photo = user.Photos.FirstOrDefault(x => x.Id == photoId);
+        var photo = await unitOfWork.PhotoRepository.GetPhotoByIdAsync(photoId);
 
 
         if (photo == null || photo.IsMain) return this.BadRequest("This photo cannot be deleted");

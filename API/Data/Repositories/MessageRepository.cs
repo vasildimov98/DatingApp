@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Data.Repositories;
 
-public class MessageRepository(DataContext context, IMapper mapper) : IMessageRepository
+public class MessageRepository(DataContext context) : IMessageRepository
 {
     public void AddGroup(Group group)
     {
