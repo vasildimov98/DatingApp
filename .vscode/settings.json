@@ -1,11 +1,12 @@
 {
-    "cSpell.words": [
-        "Autoincrement",
-        "Cloudinary",
-        "datepicker",
-        "hmac",
-        "HMACSHA",
-        "timeago",
-        "toastr"
-    ]
+  "cSpell.words": [
+    "Autoincrement",
+    "Cloudinary",
+    "datepicker",
+    "hmac",
+    "HMACSHA",
+    "timeago",
+    "toastr",
+    "wwwroot"
+  ]
 }
